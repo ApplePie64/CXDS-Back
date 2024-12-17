@@ -20,8 +20,8 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True)  # References auth.users.id
     name = Column(String, nullable=False)
     identity = Column(Enum(IdentityEnum), nullable=False)
-    vibe = Column(String, nullable=True)
-    wishlist = Column(String, nullable=True)  # Stores comma-separated product IDs
+    #vibe = Column(String, nullable=True)
+    #wishlist = Column(String, nullable=True)  # Stores comma-separated product IDs
 
     def __repr__(self):
         return f"<User(id={self.id}, name={self.name}, identity={self.identity})>"

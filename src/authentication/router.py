@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from .schemas import UserCreate, UserInDB, UserUpdate
 from .dependencies import supabase
+from datetime import datetime
 from .service import create_user, get_user_by_id, update_user, delete_user
 import httpx
 import os
@@ -16,8 +17,8 @@ async def register_user(user_data: UserCreate):
     and inserting additional details into the users table.
     """
     # Validate `identity`
-    if user_data.identity not in ["male", "female"]:
-        raise HTTPException(status_code=400, detail="Invalid identity value. Must be 'male' or 'female'.")
+    '''if user_data.identity not in ["male", "female"]:
+        raise HTTPException(status_code=400, detail="Invalid identity value. Must be 'male' or 'female'.")'''
 
     # Step 1: Create the user in Supabase Authentication
     try:
@@ -55,7 +56,8 @@ async def register_user(user_data: UserCreate):
             "username": user_data.username,
             "name": user_data.name,
             "identity": user_data.identity,
-            "vibe": user_data.vibe,
+            #vibe": user_data.vibe,
+            "created_date": datetime.now().strftime("%Y-%m-%d"),
         },
     }
 

@@ -1,5 +1,8 @@
 from .dependencies import supabase
 from .schemas import UserCreate, UserUpdate
+from datetime import datetime
+
+# Get current time with timezone
 
 USERS_TABLE = "users"
 
@@ -15,19 +18,38 @@ def create_user(user_data: UserCreate, supabase_user_id: str) -> dict:
         "username": user_data.username,
         "name": user_data.name,
         "identity": user_data.identity,
-        "vibe": user_data.vibe,
+        #"vibe": user_data.vibe,
+        "created_at": datetime.now().strftime("%Y-%m-%d"),
+        "email": user_data.email,
+        "dob": user_data.dob.isoformat(),
+        "updated_at": datetime.now().strftime("%Y-%m-%d"),
+        "phone_number" : user_data.phonenumber,
+        
     }
+    print(user_entry)
 
     # Execute the insert operation
     try:
         response = supabase.table(USERS_TABLE).insert(user_entry).execute()
+        if response.data is None:
+            raise Exception("User creation failed")
 
-    # Check for errors in the response
-    except Exception as e:  # Supabase response includes "error" in the returned dictionary
-        raise Exception(f"Error creating user in the database: {str(e)}")
+        personalization_entry = {
+            "id": supabase_user_id, 
+        }
 
-    # Return the inserted data
-    return response.data
+        personalization_response = supabase.table("personalization").insert(personalization_entry).execute()
+
+        if personalization_response.data is None:
+            raise Exception("Failed to insert user ID into personalization table")
+
+    except Exception as e:
+        raise Exception(f"Error creating user or inserting into personalization: {str(e)}")
+
+    return {
+        "user_data": response.data,
+        "personalization_status": personalization_response.data
+    }   
 
 
 def get_user_by_id(user_id: str) -> dict:
@@ -45,9 +67,9 @@ def update_user(user_id: str, user_data: UserUpdate) -> dict:
     Update user information in the users table.
     """
     update_data = {k: v for k, v in user_data.dict(exclude_none=True).items()}
-
-    response = supabase.table(USERS_TABLE).update(update_data).eq("id", user_id).execute()
-    if response.error:
+    try:
+        response = supabase.table(USERS_TABLE).update(update_data).eq("id", user_id).execute()
+    except Exception as e:
         raise Exception(f"Error updating user: {response.error.message}")
     return response.data
 

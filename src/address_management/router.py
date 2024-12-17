@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from .schemas import AddressCreate
-from .dependencies import supabase  # Import the supabase client from dependencies
+from src.authentication.dependencies import supabase 
 
 router = APIRouter()
 

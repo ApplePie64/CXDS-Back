@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from datetime import date  
 from typing import Optional, List
 from enum import Enum
 from uuid import UUID
@@ -7,6 +8,8 @@ from uuid import UUID
 class IdentityEnum(str, Enum):
     male = "male"
     female = "female"
+    other = "other"
+
 
 
 class UserBase(BaseModel):
@@ -16,7 +19,7 @@ class UserBase(BaseModel):
     username: str
     name: str
     identity: IdentityEnum
-    vibe: Optional[str] = None
+    #vibe: Optional[str] = None
 
 
 class UserCreate(BaseModel):
@@ -28,8 +31,10 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8, description="Password must be at least 8 characters long.")
     username: str
     name: str
+    dob: date  
+    phonenumber: str 
     identity: IdentityEnum
-    vibe: Optional[str] = None
+    #vibe: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -39,7 +44,7 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     username: Optional[str] = None
     identity: Optional[IdentityEnum] = None
-    vibe: Optional[str] = None
+    #vibe: Optional[str] = None
 
 
 class UserInDB(UserBase):
